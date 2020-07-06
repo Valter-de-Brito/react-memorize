@@ -2,4 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Memorize from "./Memorize";
 
-ReactDOM.render(<Memorize />, document.getElementById("root"));
+ReactDOM.render(
+  <React.StrictMode>
+    <Memorize />
+  </React.StrictMode>,
+  document.getElementById("root")
+);
