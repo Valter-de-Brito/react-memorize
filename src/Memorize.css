@@ -48,3 +48,8 @@ body {
 
   font-size: 7rem;
 }
+
+.matched {
+  visibility: hidden;
+  transition: visibility 0.5s;
+}
