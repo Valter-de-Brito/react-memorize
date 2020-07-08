@@ -30,8 +30,8 @@ body {
 
 .board {
   display: grid;
-  grid-template-columns: repeat(4, 150px);
-  grid-template-rows: repeat(2, 150px);
+  grid-template-columns: repeat(5, 100px);
+  grid-template-rows: repeat(4, 100px);
   gap: 1rem;
 
   margin: 1rem 0;
@@ -46,10 +46,39 @@ body {
   justify-content: center;
   border-radius: 10px;
 
-  font-size: 7rem;
+  font-size: 3rem;
+}
+
+.cell .down {
+  visibility: hidden;
+  transition: visibility 0.5s;
+}
+
+.cell .up {
+  visibility: visible;
+}
+
+.selected {
+  cursor: not-allowed;
 }
 
 .matched {
   visibility: hidden;
   transition: visibility 0.5s;
+}
+
+button {
+  padding: 5px 10px;
+
+  border: none;
+  border-radius: 5px;
+
+  font-size: 1.2rem;
+  background-color: #4caf58;
+  color: #fff;
+
+  width: 100%;
+  margin-top: 2rem;
+
+  cursor: pointer;
 }

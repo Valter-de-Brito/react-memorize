@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
+import shuffle from "lodash.shuffle";
+import EmojisArray from "./utils/emojis";
 
 import "./Memorize.css";
+
+const NumCardOnTable = 10;
 
 interface ICard {
   id: number;
@@ -10,14 +14,20 @@ interface ICard {
 }
 
 const Memorize = () => {
-  const cards: ICard[] = [];
   const [score, setScore] = useState(0);
   const [selectedCars, setSelectedCars] = useState<number[]>([]);
 
-  const emoji = ["💘", "🚂", "🏹", "🤞"];
-  const [card, setCard] = useState<ICard[]>(() => {
-    for (let index = 0; index < emoji.length; index++) {
-      let content = emoji[index];
+  const emojisArray = EmojisArray();
+
+  const [card, setCard] = useState<ICard[]>(loadBoard(NumCardOnTable));
+
+  function loadBoard(numCard: number): ICard[] {
+    let cards: ICard[] = [];
+
+    for (let index = 0; index < numCard; index++) {
+      const indexEmoji = Math.floor(Math.random() * emojisArray.length);
+      const content = emojisArray.splice(indexEmoji, 1)[0];
+
       cards.push({ id: index * 2, content, isFaceUp: false, isMatched: false });
       cards.push({
         id: index * 2 + 1,
@@ -27,13 +37,15 @@ const Memorize = () => {
       });
     }
 
+    cards = shuffle(cards);
+
     return cards;
-  });
+  }
 
   useEffect(() => {
-    console.log(selectedCars);
-
     if (selectedCars.length === 2) {
+      console.log("2 no array");
+
       const isMatched =
         card[selectedCars[0]].content === card[selectedCars[1]].content;
 
@@ -59,22 +71,23 @@ const Memorize = () => {
     }
   }, [card, score, selectedCars]);
 
-  function handleCellClick(id: number) {
-    const alreadySelected = selectedCars.findIndex((cardId) => cardId === id);
+  function handleCellClick(id: number, index: number) {
     const [isMatched] = card.filter((itemCard) => itemCard.id === id);
+    const alreadySelected = selectedCars.findIndex(
+      (cardId) => cardId === index
+    );
 
-    if (isMatched.isMatched !== true) {
-      if (alreadySelected !== -1) {
-        return;
-      } else {
-        setSelectedCars([...selectedCars, id]);
-        setCard(
-          card.map((item) =>
-            item.id === id ? { ...item, isFaceUp: true } : item
-          )
-        );
-      }
-    }
+    if (isMatched.isMatched === true || alreadySelected !== -1) return;
+
+    setSelectedCars([...selectedCars, index]);
+    setCard(
+      card.map((item) => (item.id === id ? { ...item, isFaceUp: true } : item))
+    );
+  }
+
+  function resetGame() {
+    setCard(loadBoard(NumCardOnTable));
+    setSelectedCars([]);
   }
 
   return (
@@ -85,15 +98,34 @@ const Memorize = () => {
         {card.map((item, index) => (
           <div
             key={index}
-            className={item.isMatched ? "cell matched" : "cell"}
-            onClick={() => handleCellClick(item.id)}
+            className={
+              selectedCars.includes(index)
+                ? "cell selected"
+                : item.isMatched
+                ? "cell matched"
+                : "cell"
+            }
+            onClick={() => handleCellClick(item.id, index)}
           >
-            {item.isFaceUp && item.content}
+            {
+              <div
+                className={
+                  item.isFaceUp
+                    ? item.isMatched && item.isFaceUp
+                      ? "down"
+                      : "up"
+                    : "down"
+                }
+              >
+                {item.content}
+              </div>
+            }
           </div>
         ))}
       </div>
 
       <h1 className="title-base footer">Score: {score}</h1>
+      <button onClick={resetGame}>Reset Game</button>
     </main>
   );
 };
