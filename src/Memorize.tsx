@@ -37,9 +37,7 @@ const Memorize = () => {
       });
     }
 
-    cards = shuffle(cards);
-
-    return cards;
+    return shuffle(cards);
   }
 
   useEffect(() => {
