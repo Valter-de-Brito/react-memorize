@@ -4,7 +4,9 @@ import EmojisArray from "./utils/emojis";
 
 import "./Memorize.css";
 
-const NumCardOnTable = 10;
+import Card from "./components/Card";
+
+const NumCardOnTable = 2;
 
 interface ICard {
   id: number;
@@ -13,13 +15,13 @@ interface ICard {
   isMatched: boolean;
 }
 
-const Memorize = () => {
+const Memorize: React.FC = () => {
   const [score, setScore] = useState(0);
   const [selectedCars, setSelectedCars] = useState<number[]>([]);
 
   const emojisArray = EmojisArray();
 
-  const [card, setCard] = useState<ICard[]>(loadBoard(NumCardOnTable));
+  const [card, setCard] = useState<ICard[]>(() => loadBoard(NumCardOnTable));
 
   function loadBoard(numCard: number): ICard[] {
     let cards: ICard[] = [];
@@ -69,15 +71,17 @@ const Memorize = () => {
     }
   }, [card, score, selectedCars]);
 
-  function handleCellClick(id: number, index: number) {
+  function handleCellClick(id: number) {
+    const cardIndex = card.findIndex((item) => item.id === id);
+
     const [isMatched] = card.filter((itemCard) => itemCard.id === id);
     const alreadySelected = selectedCars.findIndex(
-      (cardId) => cardId === index
+      (cardId) => cardId === cardIndex
     );
 
     if (isMatched.isMatched === true || alreadySelected !== -1) return;
 
-    setSelectedCars([...selectedCars, index]);
+    setSelectedCars([...selectedCars, cardIndex]);
     setCard(
       card.map((item) => (item.id === id ? { ...item, isFaceUp: true } : item))
     );
@@ -93,33 +97,10 @@ const Memorize = () => {
       <h1 className="title-base title">Memorize</h1>
 
       <div className="board">
-        {card.map((item, index) => (
-          <div
-            key={index}
-            className={
-              selectedCars.includes(index)
-                ? "cell selected"
-                : item.isMatched
-                ? "cell matched"
-                : "cell"
-            }
-            onClick={() => handleCellClick(item.id, index)}
-          >
-            {
-              <div
-                className={
-                  item.isFaceUp
-                    ? item.isMatched && item.isFaceUp
-                      ? "down"
-                      : "up"
-                    : "down"
-                }
-              >
-                {item.content}
-              </div>
-            }
-          </div>
-        ))}
+        {card &&
+          card.map((card) => (
+            <Card key={card.id} card={card} handleCellClick={handleCellClick} />
+          ))}
       </div>
 
       <h1 className="title-base footer">Score: {score}</h1>
